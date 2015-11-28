@@ -1,5 +1,4 @@
 #include "BrainfuckInterpreter.h"
-#include <iostream>
 
 using namespace ::std;
 
@@ -7,7 +6,13 @@ BrainfuckInterpreter::BrainfuckInterpreter() :
 m_tapePointer(m_tape),
 m_userCode(""),
 m_outputString("")
-{}
+{
+	for (size_t i = 0; i < TapeLength; i++)
+	{
+		m_tape[i] = 0;
+	}
+}
+
 
 string BrainfuckInterpreter::Parse(bool output)
 {
@@ -38,29 +43,35 @@ string BrainfuckInterpreter::ToString() const
 
 void BrainfuckInterpreter::ParseString()
 {
-	for (char& strPos : m_userCode)
+	for (auto strPos = m_userCode.begin(); strPos != m_userCode.end(); ++strPos)
 	{
 		ProcessInstruction(strPos);
 	}
 }
 
-void BrainfuckInterpreter::ProcessInstruction(char& instructionPointer)
+void BrainfuckInterpreter::ProcessInstruction(string::iterator& instructionPointer)
 {
-	switch (instructionPointer)
+	switch (*instructionPointer)
 	{
 	case '+':
 	case '-':
-		AdjustCell(instructionPointer);
+		if (!m_instructionFlag)
+			break;
+		AdjustCell(*instructionPointer);
 		break;
 	case '>':
 	case '<':
-		MoveCell(instructionPointer);
+		if (!m_instructionFlag)
+			break;
+		MoveCell(*instructionPointer);
 		break;
 	case '[':
 	case ']':
 		LoopHandler(instructionPointer);
 		break;
 	case '.':
+		if (!m_instructionFlag)
+			break;
 		if (*m_tapePointer >= ' ')
 			m_outputString += *m_tapePointer;
 		break;
@@ -83,15 +94,21 @@ void BrainfuckInterpreter::MoveCell(char direction)
 		m_tapePointer = (m_tapePointer != m_tape ? m_tapePointer - 1 : tapeEnd);
 }
 
-void BrainfuckInterpreter::LoopHandler(char& loopPoint)
+void BrainfuckInterpreter::LoopHandler(string::iterator& loopPoint)
 {
-	if (loopPoint == '[')
-		m_loopStart.push(&loopPoint);
+	if (*loopPoint == '[')
+	{
+		if (m_tapePointer == 0)
+			m_instructionFlag == false;
+		m_loopStart.push(loopPoint);
+	}
 	else
 	{
 		if (!m_loopStart.empty() && *m_tapePointer == 0)
 			m_loopStart.pop();
-		else if (!m_loopStart.empty())
-			loopPoint = *m_loopStart.top();
+		else if (m_loopStart.size() == 1 && !m_instructionFlag)
+			m_instructionFlag ^= m_instructionFlag;
+		else if (!m_loopStart.empty() && m_instructionFlag)
+			loopPoint = m_loopStart.top();
 	}
 }
