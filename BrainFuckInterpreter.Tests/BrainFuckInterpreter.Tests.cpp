@@ -92,9 +92,9 @@ TEST_F(Brainfuck, Email_address_copy_at_copy_dot_sh)
 
 TEST_F(Brainfuck, Working_up_to_complex_Hello_World_example)
 {
-reader.UserCodeInput(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.");
-reader.Parse();
-ASSERT_EQ("Hello W", reader.ToString()) << "Output is NOT 'Hello W'";
+	reader.UserCodeInput(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.");
+	reader.Parse();
+	ASSERT_EQ("Hello W", reader.ToString()) << "Output is NOT 'Hello W'";
 }
 
 /*

@@ -107,7 +107,7 @@ void BrainfuckInterpreter::LoopHandler(string::iterator& loopPoint)
 		if (!m_loopStart.empty() && *m_tapePointer == 0)
 			m_loopStart.pop();
 		else if (m_loopStart.size() == 1 && !m_instructionFlag)
-			m_instructionFlag ^= m_instructionFlag;
+			m_instructionFlag = true;
 		else if (!m_loopStart.empty() && m_instructionFlag)
 			loopPoint = m_loopStart.top();
 	}
