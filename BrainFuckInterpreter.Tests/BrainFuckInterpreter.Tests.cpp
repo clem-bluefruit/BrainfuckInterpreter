@@ -90,19 +90,9 @@ TEST_F(Brainfuck, Email_address_copy_at_copy_dot_sh)
 	ASSERT_EQ("copy@copy.sh", reader.ToString()) << "Output is NOT copy@copy.sh!";
 }
 
-TEST_F(Brainfuck, Working_up_to_complex_Hello_World_example)
-{
-	reader.UserCodeInput(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.");
-	reader.Parse();
-	ASSERT_EQ("Hello W", reader.ToString()) << "Output is NOT 'Hello W'";
-}
-
-/*
 TEST_F(Brainfuck, Complex_Hello_World_Esolang_example)
 {
-reader.UserCodeInput(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.>>.+++.------.--------.>>+.>++++.");
-reader.Parse(false);
-ASSERT_EQ("Hdw!", reader.Parse());
-ASSERT_EQ("Hello World!", reader.ToString()) << "Complex Hello World FAILED!";
+	reader.UserCodeInput(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.>>.+++.------.--------.>>+.>++++.");
+	reader.Parse();
+	ASSERT_EQ("Hello World!", reader.ToString()) << "Complex Hello World FAILED!";
 }
-*/

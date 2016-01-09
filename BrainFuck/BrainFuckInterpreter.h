@@ -24,6 +24,7 @@ private:
 	void ProcessInstruction(std::string::iterator& instruction);
 	void AdjustCell(char adjustment);
 	void MoveCell(char direction);
+	void JumpToEndLoop(std::string::iterator& loopPoint);
 	bool m_instructionFlag = true;
 };
 

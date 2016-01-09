@@ -82,7 +82,7 @@ void BrainfuckInterpreter::ProcessInstruction(string::iterator& instructionPoint
 
 void BrainfuckInterpreter::AdjustCell(char adjustment)
 {
-	(*m_tapePointer) = (adjustment == '+' ? *m_tapePointer + 1 : *m_tapePointer - 1);
+	(*m_tapePointer) = (adjustment == '+' ? *m_tapePointer += 1 : *m_tapePointer -= 1);
 }
 
 void BrainfuckInterpreter::MoveCell(char direction)
@@ -98,17 +98,45 @@ void BrainfuckInterpreter::LoopHandler(string::iterator& loopPoint)
 {
 	if (*loopPoint == '[')
 	{
-		if (m_tapePointer == 0)
-			m_instructionFlag == false;
+		if (*m_tapePointer == 0)
+		{
+			/* if 0:
+			   skip to corresponding close loop
+			*/
+			//m_instructionFlag = false;
+			JumpToEndLoop(loopPoint);
+			return;
+		}
 		m_loopStart.push(loopPoint);
+		//m_instructionFlag = true;
 	}
 	else
 	{
 		if (!m_loopStart.empty() && *m_tapePointer == 0)
 			m_loopStart.pop();
-		else if (m_loopStart.size() == 1 && !m_instructionFlag)
+		/*else if ((m_loopStart.size() == 1 && !m_instructionFlag))
 			m_instructionFlag = true;
+		*/
 		else if (!m_loopStart.empty() && m_instructionFlag)
 			loopPoint = m_loopStart.top();
+	}
+}
+
+void BrainfuckInterpreter::JumpToEndLoop(std::string::iterator& loopPoint)
+{
+	size_t loopStackSize = m_loopStart.size();
+	m_loopStart.push(loopPoint);
+	string::iterator userStringLoopPoint = loopPoint;
+	for (auto loopClose = loopPoint; loopClose != m_userCode.end(); loopClose++)
+	{
+		if (*loopClose == '[')
+			m_loopStart.push(loopClose);
+		if (*loopClose == ']')
+			m_loopStart.pop();
+		if (m_loopStart.size() == loopStackSize)
+		{
+			loopPoint = loopClose;
+			return;
+		}
 	}
 }
