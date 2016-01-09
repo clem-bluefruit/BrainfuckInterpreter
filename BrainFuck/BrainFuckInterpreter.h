@@ -8,7 +8,7 @@ class BrainfuckInterpreter
 public:
 	BrainfuckInterpreter();
 
-	std::string Parse(bool output = true);
+	std::string Parse();
 	std::string ToString() const;
 	void UserCodeInput(const std::string code);
 private:
@@ -25,7 +25,6 @@ private:
 	void AdjustCell(char adjustment);
 	void MoveCell(char direction);
 	void JumpToEndLoop(std::string::iterator& loopPoint);
-	bool m_instructionFlag = true;
 };
 
 #endif

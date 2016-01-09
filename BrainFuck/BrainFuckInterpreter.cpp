@@ -3,9 +3,9 @@
 using namespace ::std;
 
 BrainfuckInterpreter::BrainfuckInterpreter() :
-m_tapePointer(m_tape),
-m_userCode(""),
-m_outputString("")
+	m_tapePointer(m_tape),
+	m_userCode(""),
+	m_outputString("")
 {
 	for (size_t i = 0; i < TapeLength; i++)
 	{
@@ -13,11 +13,10 @@ m_outputString("")
 	}
 }
 
-
-string BrainfuckInterpreter::Parse(bool output)
+string BrainfuckInterpreter::Parse()
 {
 	ParseString();
-	return (output ? RawTapeString() : "");
+	return RawTapeString();
 }
 
 void BrainfuckInterpreter::UserCodeInput(const string code)
@@ -28,7 +27,7 @@ void BrainfuckInterpreter::UserCodeInput(const string code)
 string BrainfuckInterpreter::RawTapeString() const
 {
 	string tempString;
-	for (const char& c : m_tape)
+	for (const char c : m_tape)
 	{
 		if (c != 0)
 			tempString += c;
@@ -55,14 +54,10 @@ void BrainfuckInterpreter::ProcessInstruction(string::iterator& instructionPoint
 	{
 	case '+':
 	case '-':
-		if (!m_instructionFlag)
-			break;
 		AdjustCell(*instructionPointer);
 		break;
 	case '>':
 	case '<':
-		if (!m_instructionFlag)
-			break;
 		MoveCell(*instructionPointer);
 		break;
 	case '[':
@@ -70,8 +65,6 @@ void BrainfuckInterpreter::ProcessInstruction(string::iterator& instructionPoint
 		LoopHandler(instructionPointer);
 		break;
 	case '.':
-		if (!m_instructionFlag)
-			break;
 		if (*m_tapePointer >= ' ')
 			m_outputString += *m_tapePointer;
 		break;
@@ -82,7 +75,10 @@ void BrainfuckInterpreter::ProcessInstruction(string::iterator& instructionPoint
 
 void BrainfuckInterpreter::AdjustCell(char adjustment)
 {
-	(*m_tapePointer) = (adjustment == '+' ? *m_tapePointer += 1 : *m_tapePointer -= 1);
+	if (adjustment == '+')
+		*m_tapePointer += 1;
+	else
+		*m_tapePointer -= 1;
 }
 
 void BrainfuckInterpreter::MoveCell(char direction)
@@ -98,41 +94,31 @@ void BrainfuckInterpreter::LoopHandler(string::iterator& loopPoint)
 {
 	if (*loopPoint == '[')
 	{
-		if (*m_tapePointer == 0)
-		{
-			/* if 0:
-			   skip to corresponding close loop
-			*/
-			//m_instructionFlag = false;
-			JumpToEndLoop(loopPoint);
-			return;
-		}
-		m_loopStart.push(loopPoint);
-		//m_instructionFlag = true;
+		*m_tapePointer == 0 ? JumpToEndLoop(loopPoint) : m_loopStart.push(loopPoint);
+		return;
 	}
 	else
 	{
 		if (!m_loopStart.empty() && *m_tapePointer == 0)
+		{
 			m_loopStart.pop();
-		/*else if ((m_loopStart.size() == 1 && !m_instructionFlag))
-			m_instructionFlag = true;
-		*/
-		else if (!m_loopStart.empty() && m_instructionFlag)
-			loopPoint = m_loopStart.top();
+			return;
+		}
 	}
+	loopPoint = m_loopStart.top();
 }
 
 void BrainfuckInterpreter::JumpToEndLoop(std::string::iterator& loopPoint)
 {
 	size_t loopStackSize = m_loopStart.size();
 	m_loopStart.push(loopPoint);
-	string::iterator userStringLoopPoint = loopPoint;
 	for (auto loopClose = loopPoint; loopClose != m_userCode.end(); loopClose++)
 	{
 		if (*loopClose == '[')
 			m_loopStart.push(loopClose);
 		if (*loopClose == ']')
 			m_loopStart.pop();
+
 		if (m_loopStart.size() == loopStackSize)
 		{
 			loopPoint = loopClose;
